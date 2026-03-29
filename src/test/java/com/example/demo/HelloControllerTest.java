@@ -18,4 +18,10 @@ class HelloControllerTest {
         String response = restTemplate.getForObject("/", String.class);
         assertEquals("Hello World ...", response);
     }
+
+    @Test
+    void testHelloEndpoint1() {
+        String response = restTemplate.getForObject("/say", String.class);
+        assertEquals("Hello to you ...", response);
+    }
 }
