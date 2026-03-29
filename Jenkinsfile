@@ -1,36 +1,29 @@
 pipeline {
     agent any
 
-    environment {
-        APP_DIR = '/home/ec2-user/CI-CD'  // Your existing project directory
-    }
-
     stages {
 
-        stage('Pull Code From Git') {
+        stage('Checkout Code') {
             steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                    # Pull latest code
-                    git reset --hard
-                    git clean -fd
-                    git pull origin main
-                    '''
-                }
+                // Jenkins will handle the workspace directory
+                checkout([$class: 'GitSCM',
+                          branches: [[name: 'main']],
+                          userRemoteConfigs: [[url: 'https://github.com/Vimal-P-3692/CI-CD.git']]
+                ])
             }
         }
 
         stage('Build') {
             steps {
-                dir("${APP_DIR}") {
+                dir("${WORKSPACE}") {
                     sh './gradlew build --no-daemon'
                 }
             }
         }
 
-        stage('Test Code') {
+        stage('Test') {
             steps {
-                dir("${APP_DIR}") {
+                dir("${WORKSPACE}") {
                     sh './gradlew test --no-daemon'
                 }
             }
@@ -48,7 +41,7 @@ pipeline {
             echo "Pipeline completed successfully!"
         }
         failure {
-            echo "Pipeline failed. Check the logs for details."
+            echo "Pipeline failed. Check console output for details."
         }
     }
 }
