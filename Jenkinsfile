@@ -27,18 +27,9 @@ pipeline {
             }
         }
 
-        stage('Deploy to Server Directory') {
-            steps {
-                sh '''
-                sudo cp ${WORKSPACE}/build/libs/*.jar /home/ec2-user/CI-CD/
-                sudo chown ec2-user:ec2-user /home/ec2-user/CI-CD/*.jar
-                '''
-            }
-        }
-
         stage('Restart Service') {
             steps {
-                sh 'sudo systemctl restart myapp'
+                sh 'systemctl restart myapp'
             }
         }
     }
