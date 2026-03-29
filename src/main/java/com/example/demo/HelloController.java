@@ -14,4 +14,9 @@ public class HelloController {
     public String sayHello() {
         return "Hello to you ...";
     }
+
+    @GetMapping("/black")
+    public String sayBlack() {
+        return "Hello Black ...";
+    }
 }
