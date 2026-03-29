@@ -2,18 +2,18 @@ pipeline {
     agent any
 
     stages {
-
         stage('Checkout Code') {
             steps {
-                dir('/home/ec2-user/CI-CD') {
-                    sh 'git pull origin main'
-                }
+                checkout([$class: 'GitSCM',
+                          branches: [[name: 'main']],
+                          userRemoteConfigs: [[url: 'https://github.com/Vimal-P-3692/CI-CD.git']]
+                ])
             }
         }
 
         stage('Build') {
             steps {
-                dir('/home/ec2-user/CI-CD') {
+                dir("${WORKSPACE}") {
                     sh './gradlew build --no-daemon'
                 }
             }
@@ -21,9 +21,18 @@ pipeline {
 
         stage('Test') {
             steps {
-                dir('/home/ec2-user/CI-CD') {
+                dir("${WORKSPACE}") {
                     sh './gradlew test --no-daemon'
                 }
+            }
+        }
+
+        stage('Deploy to Server Directory') {
+            steps {
+                sh '''
+                sudo cp ${WORKSPACE}/build/libs/*.jar /home/ec2-user/CI-CD/
+                sudo chown ec2-user:ec2-user /home/ec2-user/CI-CD/*.jar
+                '''
             }
         }
 
