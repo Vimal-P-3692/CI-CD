@@ -29,7 +29,7 @@ pipeline {
 
         stage('Restart Service') {
             steps {
-                sh 'systemctl restart myapp'
+                sh 'sudo systemctl restart myapp'
             }
         }
     }
