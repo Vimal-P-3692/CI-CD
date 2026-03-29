@@ -14,7 +14,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir("${WORKSPACE}") {
-                    sh './gradlew build --no-daemon'
+                    sh './gradlew clean build --no-daemon'
                 }
             }
         }
