@@ -3,32 +3,27 @@ pipeline {
 
     stages {
 
-        stage('Pull Latest Code') {
+        stage('Checkout Code') {
             steps {
-                sh '''
-                cd /home/ec2-user/CI-CD
-                git reset --hard
-                git clean -fd
-                git pull origin main
-                '''
+                dir('/home/ec2-user/CI-CD') {
+                    sh 'git pull origin main'
+                }
             }
         }
 
-        stage('Build JAR') {
+        stage('Build') {
             steps {
-                sh '''
-                cd /home/ec2-user/CI-CD
-                ./gradlew build --no-daemon
-                '''
+                dir('/home/ec2-user/CI-CD') {
+                    sh './gradlew build --no-daemon'
+                }
             }
         }
 
-        stage('Run Tests') {
+        stage('Test') {
             steps {
-                sh '''
-                cd /home/ec2-user/CI-CD
-                ./gradlew test --no-daemon
-                '''
+                dir('/home/ec2-user/CI-CD') {
+                    sh './gradlew test --no-daemon'
+                }
             }
         }
 
@@ -41,7 +36,7 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully and service restarted!"
+            echo "Pipeline completed successfully!"
         }
         failure {
             echo "Pipeline failed. Check console output for details."
