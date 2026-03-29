@@ -3,29 +3,32 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Pull Latest Code') {
             steps {
-                // Jenkins will handle the workspace directory
-                checkout([$class: 'GitSCM',
-                          branches: [[name: 'main']],
-                          userRemoteConfigs: [[url: 'https://github.com/Vimal-P-3692/CI-CD.git']]
-                ])
+                sh '''
+                cd /home/ec2-user/CI-CD
+                git reset --hard
+                git clean -fd
+                git pull origin main
+                '''
             }
         }
 
-        stage('Build') {
+        stage('Build JAR') {
             steps {
-                dir("${WORKSPACE}") {
-                    sh './gradlew build --no-daemon'
-                }
+                sh '''
+                cd /home/ec2-user/CI-CD
+                ./gradlew build --no-daemon
+                '''
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                dir("${WORKSPACE}") {
-                    sh './gradlew test --no-daemon'
-                }
+                sh '''
+                cd /home/ec2-user/CI-CD
+                ./gradlew test --no-daemon
+                '''
             }
         }
 
@@ -38,7 +41,7 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully!"
+            echo "Pipeline completed successfully and service restarted!"
         }
         failure {
             echo "Pipeline failed. Check console output for details."
